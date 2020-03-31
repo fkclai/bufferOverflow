@@ -6,10 +6,10 @@ import sys
 #Python script to fuzz SyncBreeze, OSCP LAB
 
 
-host='192.168.187.128'
+host='192.168.179.10'
 port=80
 maxSize = 3000
-size = 100
+size = 700
 stepSize=100
 
 if len(sys.argv) == 2:
